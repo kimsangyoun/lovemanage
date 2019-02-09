@@ -2,16 +2,72 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
- 
-<mapper namespace="member">
- 
-  <select id="memberSelectOne" resultMap="memberModel" parameterType="String">
-		select id, pwd from MEMBER
-		where id = #{id}
+<mapper namespace="user">
+	 <resultMap type="com.lovemanager.lmservice.Dto.UserDto" id="userModel">
+			<id property="userId" column="userId" javaType="String" />
+			<result property="userPwd" column="userPwd" javaType="String" />
+			<result property="userNm" column="userNm" javaType="String" />
+			<collection property="roleList" column="userId" javaType="java.util.ArrayList" ofType="com.lovemanager.lmservice.Dto.RoleDto" select="selectRoleByUser">
+				<id property="userId" column="userId" javaType="String" />
+				<result property="roleId" column="roleId" javaType="String" />
+				<result property="roleNm" column="roleNm" javaType="String" />
+			</collection> 
+	</resultMap>
+	
+    <select id="selectOneUser" resultMap="userModel" parameterType="String">
+		select AA.USER_ID as userId, USER_PWD as userPwd, USER_NM as userNm from USER as AA
+		where AA.USER_ID = #{id}
+    </select>
+	
+	 <select id="selectOneUserByCouple" resultType="User" parameterType="String">
+		select A.USER_ID as userId ,USER_NM as userNm ,B.COUPLE_ID as coupleId,COUPLE_YN as coupleYn from USER AS A
+		left outer join `COUPLE` AS B
+		ON A.USER_ID = B.USER_ID 
+		WHERE A.USER_ID=#{id} AND B.COUPLE_YN='N'
+		union all
+		 select A.USER_ID as userId ,USER_NM as userNm ,B.COUPLE_ID as coupleId,COUPLE_YN as coupleYn from USER AS A
+		 left outer join `COUPLE` AS B
+		 ON A.USER_ID = B.USER_ID 
+		WHERE A.USER_ID=#{id} and COUPLE_ID is null;
+   	 </select>
+   	 
+   	 <select id ="selectRequestUser" resultType="User" parameterType="String">
+   	 	SELECT REQ_FROM as userId, BB.USER_NM as userNm,COUPLE_YN as coupleYn FROM REQ_COUPLE AA
+		JOIN USER BB
+		ON BB.USER_ID = AA.REQ_FROM
+		LEFT OUTER JOIN COUPLE CC
+		ON AA.REQ_FROM = CC.USER_ID AND CC.COUPLE_YN = 'N'
+		WHERE AA.REQ_TO=#{id};
+   	 </select>
+   
+	<insert id="insertUser" parameterType="User" >
+	  insert into USER (user_id, user_pwd, user_nm,reg_date,reg_id,edit_date,edit_id)
+	  values (#{userId}, #{userPwd}, #{userNm},NOW(),'system',NOW(),'system')
+	</insert>
+	
+	<select id="selectRoleByUser" resultType="com.lovemanager.lmservice.Dto.RoleDto">
+		select USER_ID as userId, ROLE_ID as roleId,ROLE_NM as roleNm 
+		from ROLES where USER_ID = #{id}
 	</select>
 	
-	<resultMap type="com.lovemanager.lmservice.Dto.MemberDto" id="memberModel">
-		<id property="id" column="id" javaType="String" />
-		<result property="pwd" column="pwd" javaType="String" />
-	</resultMap>
+	<insert id="insertRoleList" parameterType="User">  
+		INSERT INTO ROLES (USER_ID,ROLE_ID, ROLE_NM) VALUES  
+		<foreach collection="roleList" item="element" index="index" separator=",">  
+		    ( #{element.userId}, #{element.roleId},#{element.roleNm} )  
+		</foreach>  
+	</insert>  
+	<insert id="insertRolebyUser" parameterType="User" >
+	  insert into USER (user_id, user_pwd, user_nm)
+	  values (, #{userPwd}, #{userNm})
+	</insert>
+	<insert id="insertRequestbyUser" parameterType="User" >
+	  insert into REQ_COUPLE (
+	  REQ_FROM, REQ_TO, REQ_STATE,REG_USER, EDIT_USER)
+	  values (#{userId},#{coupleId},'003','system','system')
+	</insert>
+	<delete id="deleteUser" parameterType="User" >	
+		delete from USER where user_id=#{userId};
+	</delete>
+
+
 </mapper>

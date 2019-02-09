@@ -7,4 +7,7 @@
         	<setting name="logImpl" value="LOG4J" />
     	</settings>
         
+	  <typeAliases>
+	 	<typeAlias type="com.lovemanager.lmservice.Dto.UserDto" alias="User"/>
+	 </typeAliases>
     </configuration>
