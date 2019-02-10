@@ -12,9 +12,13 @@ public interface MemberDao {
 	public int insertRole(UserDto user) throws SQLException;
 	public int deleteUser(UserDto user) throws SQLException;
 	public int insertRequest(UserDto user) throws SQLException;
-	
+	public int updateRequest(UserDto user);
+	public int insertCouple(List<UserDto> userlist) throws SQLException;
 	public UserDto findMemberbyCouple(String id) ;
 	public List<UserDto> findRequestUser(String id);
+	public int updateRole(List<UserDto> userlist);
+	
+	
 	
 }
 

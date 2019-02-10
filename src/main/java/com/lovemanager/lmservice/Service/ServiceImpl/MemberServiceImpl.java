@@ -98,6 +98,55 @@ public class MemberServiceImpl implements MemberService{
 		return result;
 		
 	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor={Exception.class})
+	public int insertCouple(UserDto user) {
+		// TODO Auto-generated method stub
+		int result = -1;
+		List<UserDto> userlist = new ArrayList<UserDto>();
+		UserDto currUser = new UserDto();
+		UserDto coupleUser = new UserDto();
+		currUser.setUserId(user.getUserId());
+		coupleUser.setUserId(user.getCoupleId());
+		
+		currUser.setCoupleId(user.getCoupleId());
+		coupleUser.setCoupleId(user.getUserId());
+		
+		currUser.setCoupleYn("Y");
+		coupleUser.setCoupleYn("Y");
+		
+		ArrayList<RoleDto> currUserRoles = new ArrayList<RoleDto>();
+		ArrayList<RoleDto> coupleUserRoles = new ArrayList<RoleDto>();
+		
+		currUserRoles.add(new RoleDto(currUser.getUserId(),"ROLE_S001","일반사용자"));
+		coupleUserRoles.add(new RoleDto(coupleUser.getUserId(),"ROLE_S001","일반사용자"));
+		
+		currUser.setRoleList(currUserRoles);
+		coupleUser.setRoleList(coupleUserRoles);
+
+		userlist.add(currUser);
+		userlist.add(coupleUser);
+		
+		
+		try {
+			result = memberDAO.insertCouple(userlist);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			
+		if(result >0) {
+			result = memberDAO.updateRole(userlist);
+		}
+		
+		if(result >0) {
+			result = memberDAO.updateRequest(user);
+		}
+		
+		
+		return result;
+	}
 	
 	
 	

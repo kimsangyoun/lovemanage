@@ -368,7 +368,7 @@
 		    				    	if(stateObject.requestType=='Y'){
 		    				    		login.requestCouple();
 		    				    	}else{
-		    				    		confirmMsg = stateObject.coupleid+"님의 커플신청을 수락 하셨습니다. 정말로 수락 하시겠습니까?";
+		    				    		login.acceptRequest();
 		    				    	}
 		    			    	}
 		    			  }else{

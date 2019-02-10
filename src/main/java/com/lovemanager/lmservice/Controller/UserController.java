@@ -215,5 +215,40 @@ public class UserController {
 		return resultMap;
 	}
 	
+	@ResponseBody
+	@RequestMapping(value = "/user/acceptrequest.do", method = RequestMethod.POST)
+	public Map<String,Object> acceptRequest(@RequestBody UserDto user) {
+		
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+			/*
+		if(bindingResult.hasErrors()){ //validation 에러가 있으면,
+			resultMap.put("resultMsg", bindingResult.getAllErrors().get(0).getDefaultMessage());
+			resultMap.put("resultCode", "100");
+			return resultMap;
+		}*/
+
+	/*	UserDto userDto = memberService.findMemberbyCouple(u);
+			
+		if(userDto ==null || userDto.getUserId().equals("")) {
+			System.out.println("널이래?");
+			resultMap.put("resultMsg", "커플신청 실패");
+			resultMap.put("resultCode", "000");
+			return resultMap;
+		}*/
+		int result = memberService.insertCouple(user);
+		System.out.println("인서트?");
+		if(result>0) {
+			resultMap.put("resultMsg", "회원조회 성공");
+			resultMap.put("resultCode", "200");
+		}else {
+			resultMap.put("resultMsg", "커플신청 실패");
+			resultMap.put("resultCode", "000");
+			return resultMap;
+		}
+				
+		return resultMap;
+	}
+	
+	
 	
 }

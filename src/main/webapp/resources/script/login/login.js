@@ -20,12 +20,21 @@ var login={
 		            if (data) {
 		            	if(data.resultCode=='200'){
 		            		$( '#findTable > tbody').empty();
-		            		login.drawtable(data.resultData);
+		            		if(!data.resultData){
+		            			var td = $("<td colspan='3'>"+"데이터가 존재하지 않습니다."+"</td>");
+		            			var tr = $("<tr></tr>").prepend(td);
+		            			$("#findTable").prepend(tr);
+		            		}else{
+		            			login.drawtable(data.resultData);
+		            		}
 		            	}else{
 		            		if(data.resultCode=='100'){
 		            			alert(data.resultMsg);
 		            		}else if(data.resultCode=='000'){
-		            			alert(data.resultMsg);
+		            			$( '#findTable > tbody').empty();
+		            			var td = $("<td colspan='3'>"+"데이터가 존재하지 않습니다."+"</td>");
+		            			var tr = $("<tr></tr>").prepend(td);
+		            			$("#findTable").prepend(tr);
 		            		}
 		            	}
 		            }         
@@ -98,17 +107,22 @@ var login={
 		        success : function (data) {
 		            if (data) {
 		            	if(data.resultCode=='200'){
-		            		 for(var i =0; i< data.resultData.length;i++){
-		       
-		            			 var innerBtn = $("<button type='button' class='btn'></button>").prepend("수락").attr("onclick","login.selectCouple('"+data.resultData[i].userId+"','N');");
-			            	     var td1 = $("<td>"+(i+1)+"</td>");
-			            	     var td2 = $("<td>"+data.resultData[i].userId+"</td>");
-			            	     var td3 = $("<td></td>").prepend(innerBtn);
-			            	     var tr = $("<tr></tr>").prepend(td3);
-			            	     tr.prepend(td2);
-			            	     tr.prepend(td1);
-			            	     $("#findTable").prepend(tr);
-		            		 }
+		            		if(!data.resultData || data.resultData.length ==0){
+		            			var td = $("<td colspan='3'>"+"데이터가 존재하지 않습니다."+"</td>");
+		            			var tr = $("<tr></tr>").prepend(td);
+		            			$("#findTable").prepend(tr);
+		            		}else{
+			            		 for(var i =0; i< data.resultData.length;i++){
+			            			 var innerBtn = $("<button type='button' class='btn'></button>").prepend("수락").attr("onclick","login.selectCouple('"+data.resultData[i].userId+"','N');");
+				            	     var td1 = $("<td>"+(i+1)+"</td>");
+				            	     var td2 = $("<td>"+data.resultData[i].userId+"</td>");
+				            	     var td3 = $("<td></td>").prepend(innerBtn);
+				            	     var tr = $("<tr></tr>").prepend(td3);
+				            	     tr.prepend(td2);
+				            	     tr.prepend(td1);
+				            	     $("#findTable").prepend(tr);
+			            		 }
+		            		}
 		            		$("#myModal").modal("show");
 		            	}else{
 		            		if(data.resultCode=='100'){
@@ -134,6 +148,42 @@ var login={
 		 $.ajax({
 		        type : 'POST',
 		        url : '../user/couplerequest.do',
+		        data : JSON.stringify(obj),
+		        success : function (data) {
+		            if (data) {
+		            	if(data.resultCode=='200'){
+		            		bootbox.alert({
+		            		    message: "신청이 완료되었습니다. 상대분께서 수락시 서비스가 시작됩니다. 감사합니다.",
+		            		    size: 'small',
+		            		    callback: function () {
+		            		    	location.href="../home/home.do";
+		            		    }
+		            		});
+		            		
+		            	}else{
+		            		if(data.resultCode=='100'){
+		            			alert(data.resultMsg);
+		            		}else if(data.resultCode=='000'){
+		            			alert(data.resultMsg);
+		            		}
+		            	}
+		            }         
+		        },
+		        error : function(e){
+		        	if(e.status==500 && e.responseText=="DuplicateKeyException"){
+		        		alert("아이디 중복체크를 해주세요.");
+		        	}
+		        }
+		    });
+	 },
+	 acceptRequest : function(){
+		 var obj = new Object();
+		 obj.userId = stateObject.userid;
+		 obj.coupleId = stateObject.coupleid;
+		 
+		 $.ajax({
+		        type : 'POST',
+		        url : '../user/acceptrequest.do',
 		        data : JSON.stringify(obj),
 		        success : function (data) {
 		            if (data) {

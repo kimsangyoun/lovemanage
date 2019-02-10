@@ -43,10 +43,10 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         System.out.println("kkk"+"authenticate start01");
         validator.validate(userdto, errors);
         if(errors.hasErrors()) {
-        	   System.out.println("kkk"+"authenticate start01 error"+errors.toString());
+        	System.out.println("kkk"+"authenticate start01 error"+errors.toString());
         	throw new UserInvalidException(errors.toString());
         }
-        System.out.println("kkk"+"authenticate start02");
+
         UserDto user = (UserDto) customService.loadUserByUsername(username);
         
         if(user ==null) {
